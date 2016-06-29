@@ -1,5 +1,5 @@
 export ELK_APP ?= intercomelk
-export ELK_CONFIG ?= docker-compose.dev.yml
+export ELK_CONFIG ?= standard.yml
 
 DOCKER_COMPOSE ?= docker-compose
 DOCKER ?= docker

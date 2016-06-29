@@ -1,68 +1,92 @@
-`Intercom ELK` is a preconfigured ELK stack to analyze Intercom events of your app.
+`Intercom ELK` is a starting block using docker and an ELK stack to analyze your Intercom data.
 
-It is built with standard pillars such as ELK and docker.
+### How to use it?
 
-### Getting started
+1. Fork this repository
+1. Add your application configuration
+1. Launch it!
 
-#### Prerequisites
+### Logstash
 
-1. [Install Docker with Docker Compose](https://docs.docker.com/compose/install/)
-1. TODO
+Add your configuration files in the `./logstash` directory. Logstash files
+may have the `.conf` extension. You can also add your patterns or any other
+files. Just keep in mind that they will be stored in the `/etc/logstash/`
+directory.
 
-#### Install
+A default configuration is provided to retrieve all users and events from
+Intercom. You just need to provide your application name and API key.
 
-1. Clone this repository or download [master zip](https://github.com/cogniteev/intercom-elk/archive/master.zip)
-1. Starts the `Intercom ELK` containers using Docker Compose: `docker-compose -p intercomelk -f docker-compose.yml up -d`
-1. Visit [http://localhost:9000](http://localhost:9000) or `http://docker-host-ip:9000`. You should see the Intercom-ELK dashboard, but there is no data yet.
+### Kibana configuration
 
-#### Import log files
+The `./kibana-config` allows you to deploy a Kibana configuration the first
+time you application is launched.
+To do that, simply put an
+[Elasticdump](https://www.npmjs.com/package/elasticdump) json export
+of the *.kibana* Elasticsearch index in this directory. Json files must have
+the following names:
 
-TODO
+* `./kibana-config/mapping.json`
+* `./kibana-config/data.json`
 
-#### Play
-
-Go back to [http://localhost:9000](http://localhost:9000) or `http://docker-host-ip:9000`. You should have figures and graphs, __congrats !__
-
-###### Output
-
-In the ELK stack, the output of choice is elasticsearch.
-
-Notice the `document_id` field that allows to push an event twice while still having only one entry in elasticsearch. Duplicated events are automatically de-duplicated for better consistency.
-
-### Troubleshoot
-
- * __Connection refused to [http://localhost:9000](http://localhost:9000)__
-
- Check that the logstash web-client is started properly with kitematic, or with the command:
-
- ```docker-compose -p intercomelk -f docker-compose.yml ps```
-
-If docker is running in a VM, which is the case on OS X and Windows, make sure to replace `localhost` with the ip of the VM running docker.
-
-```docker-compose -p intercomelk -f docker-compose.yml ps```
-
-You can issue a full restart with:
+If files are missing, Kibana will simply start with an empty configuration.
+You can then prepare your application by creating your *saved searchs*,
+*virtualizations*, and *dashboards*, and then export the configuration to Json
+with the following utility:
 
 ```shell
-docker-compose -p intercomelk -f docker-compose.yml stop
-docker-compose -p intercomelk -f docker-compose.yml up -d
+$ scripts/export-kibana-config
 ```
 
-If required, delete the docker containers once stopped with:
+The script leverages [*quay.io/cogniteev/elk-export-es-index*](https://quay.io/repository/cogniteev/elk-export-es-index) Docker image to export
+*.kibana* index in a container under JSON format. Then it uses
+`docker cp` commands to retrieve the JSON files back to your workstation.
+
+Note: the Elasticsearch container of your application must be running.
+
+### Available *Makefile* targets
+
+#### env
+
+Writes to standard output a helpful bourne-shell alias definition that
+encapsulates several arguments that need to be passed to Docker Compose.
+
 ```shell
-docker-compose -p intercomelk -f docker-compose.yml rm
+$ make env
+alias dc-elk="docker-compose -p 'intercomelk' -f 'standard.yml'"
 ```
 
-### Purge
+You may use the following command to define it in your shell:
 
-If you need to purge old logs, you can use [Elastic curator](https://www.elastic.co/guide/en/elasticsearch/client/curator/current/index.html) 
-
-For instance to keep the most recent 100GB of logs:
 ```shell
-docker run --rm --link intercomelk_elasticsearch_1:elasticsearch digitalwonderland/elasticsearch-curator --host elasticsearch -n delete --disk-space 100
+$ eval "$(make env)"
+$ type dc-elk
+dc-elk is aliased to `docker-compose -p 'intercomelk' -f 'standard.yml''
 ```
+
+#### pull
+
+Retrieves latest version of all Docker images used by this Docker Compose application.
+
+#### up
+
+Run containers in the background. Equivalent to `docker-compose up -d`
+
+### wait
+
+Wait for the *kibana* container to stop.
+
+### Available *Makefile* options
+
+Here are the environment variables that can be passed to `make` to customize
+default behavior.
+
+Name | Default | Description
+-----|---------|------------
+ELK_APP | intercomelk | Docker containers prefix
+ELK_CONFIG | standard.yml | path to docker-compose input file
+DOCKER_COMPOSE | docker-compose | path to docker-compose executable
 
 ### License
 
-`OnCrawl ELK` is licensed under the Apache License, Version 2.0. See
+`Intercom ELK` is licensed under the Apache License, Version 2.0. See
 [LICENSE](LICENSE) file for full license text.

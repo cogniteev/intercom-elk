@@ -14,8 +14,6 @@ logstash:
   build: logstash
   links:
     - elasticsearch
-  ports:
-    - "9201:9201"
 
 # Kibana index initializer
 kibana-config:

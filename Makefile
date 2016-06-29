@@ -6,7 +6,7 @@ DOCKER ?= docker
 
 EXTRA_IMAGES =                          \
 	cogniteev/elk-kibana-config:1.0     \
-	cogniteev/elk-logstash:1.0          \
+	cogniteev/elk-logstash:latest       \
 	cogniteev/elk-export-es-index:1.0
 
 build ps logs kill stop:

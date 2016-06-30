@@ -23,7 +23,7 @@ kibana-config:
 
 # Kibana with modified entry point to wait for index initialization
 kibana:
-  image: quay.io/cogniteev/elk-kibana:latest
+  image: quay.io/cogniteev/elk-kibana
   links:
     - elasticsearch
   ports:

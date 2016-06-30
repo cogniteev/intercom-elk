@@ -1,1 +1,1 @@
-FROM quay.io/cogniteev/elk-logstash-intercom:0.2
+FROM quay.io/cogniteev/elk-logstash-intercom:0.3

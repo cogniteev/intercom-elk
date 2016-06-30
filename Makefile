@@ -4,10 +4,11 @@ export ELK_CONFIG ?= standard.yml
 DOCKER_COMPOSE ?= docker-compose
 DOCKER ?= docker
 
-EXTRA_IMAGES =                          \
-	cogniteev/elk-kibana-config:1.0     \
-	cogniteev/elk-logstash:latest       \
-	cogniteev/elk-export-es-index:1.0
+EXTRA_IMAGES =                      \
+	cogniteev/elk-kibana-config     \
+	cogniteev/elk-logstash          \
+	cogniteev/elk-export-es-index   \
+	cogniteev/elk-logstash-intercom
 
 build ps logs kill stop:
 	@$(DOCKER_COMPOSE) -p $(ELK_APP) -f $(ELK_CONFIG) $@
